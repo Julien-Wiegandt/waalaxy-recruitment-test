@@ -1,9 +1,13 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
+import Fifo from "./views/Fifo";
 
 function App() {
-  return <div className="App"></div>;
+  return (
+    <div className="App">
+      <Fifo />
+    </div>
+  );
 }
 
 export default App;

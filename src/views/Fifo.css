@@ -1,0 +1,23 @@
+.fifo {
+  width: 900px;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 900px) {
+  .fifo {
+    width: 90%;
+  }
+}
+
+.fifo__container {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 900px) {
+  .fifo__container {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 60px;
+  }
+}
