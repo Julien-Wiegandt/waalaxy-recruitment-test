@@ -4,6 +4,9 @@ import Actions from "../components/Actions";
 import Fifoqueue from "../components/Fifoqueue";
 import "./Fifo.css";
 import Action from "../interfaces/Action";
+import CreditsAction from "../interfaces/CreditsAction";
+import CreditsActionService from "../services/CreditsActions";
+import FifoQueueService from "../services/Fifoqueue";
 
 const actionsData = [
   { name: "Action A", maxCredits: 27, color: "#F1C0E8" },
@@ -14,12 +17,7 @@ const actionsData = [
   { name: "Action F", maxCredits: 10, color: "#98F5E1" },
 ];
 
-interface CreditsAction {
-  credits: number;
-  name: string;
-}
-
-function getMyCredits(action: Action): number {
+function generateCredits(action: Action): number {
   const min = action.maxCredits * 0.8;
   const range = action.maxCredits - min;
   return Math.round(min + Math.random() * range);
@@ -28,24 +26,9 @@ function getMyCredits(action: Action): number {
 function Fifo() {
   const [actions, setActions] = useState<Action[]>([]);
   const [credits, setCredits] = useState<CreditsAction[]>([]);
-  useEffect(() => {
-    let newActions: Action[] = [];
-    actionsData.forEach((action) => {
-      newActions.push(action);
-    });
-    setActions(newActions);
-  }, []);
-
-  useEffect(() => {
-    let newCredits: CreditsAction[] = [];
-    actions.forEach((action) => {
-      newCredits.push({ name: action.name, credits: getMyCredits(action) });
-    });
-    setCredits(newCredits);
-  }, [actions]);
-
   const [fifoQueue, setFifoQueue] = useState<Action[]>([]);
 
+  // Add action to fifoQueue
   const addAction = (action: Action) => {
     credits.forEach((creditsAction, index) => {
       if (creditsAction.name === action.name) {
@@ -59,15 +42,95 @@ function Fifo() {
         }
       }
     });
+
     return 0;
   };
 
+  const reloadCredits = () => {
+    let newCredits: CreditsAction[] = [];
+    actions.forEach((action) => {
+      newCredits.push({ credits: generateCredits(action), name: action.name });
+    });
+    setCredits(newCredits);
+    return 0;
+  };
+
+  const removeFifoqueue = () => {
+    setFifoQueue([]);
+    return 0;
+  };
+
+  useEffect(() => {
+    // Create actions on load
+    let newActions: Action[] = [];
+    actionsData.forEach((action) => {
+      newActions.push(action);
+    });
+    setActions(newActions);
+
+    // Get api credits if not empty
+    CreditsActionService.getAll()
+      .then((res) => {
+        if (res.data !== []) {
+          const newCredits: CreditsAction[] = [];
+          res.data.forEach((creditsAction: CreditsAction) => {
+            newCredits.push({ credits: creditsAction.credits, name: creditsAction.name });
+          });
+          setCredits(newCredits);
+        } else {
+          reloadCredits();
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    // Get api fifoqueue if not empty
+    FifoQueueService.getAll()
+      .then((res) => {
+        if (res.data !== []) {
+          const newFifoQueue: Action[] = [];
+          res.data.forEach((action: Action) => {
+            newFifoQueue.push({
+              name: action.name,
+              maxCredits: action.maxCredits,
+              color: action.color,
+            });
+          });
+          setFifoQueue(newFifoQueue);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+
+  useEffect(() => {
+    CreditsActionService.update(credits)
+      .then((res) => {})
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [credits]);
+
+  useEffect(() => {
+    FifoQueueService.update(fifoQueue)
+      .then((res) => {})
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [fifoQueue]);
+
+  useEffect(() => {
+    reloadCredits();
+  }, [actions]);
+
   return (
     <div className="fifo">
-      <Timer />
+      <Timer reloadCredits={reloadCredits} />
       <div className="fifo__container">
         <Actions actions={actions} addAction={addAction} credits={credits} />
-        <Fifoqueue fifoQueue={fifoQueue} />
+        <Fifoqueue fifoQueue={fifoQueue} removeFifoqueue={removeFifoqueue} />
       </div>
     </div>
   );
