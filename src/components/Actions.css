@@ -25,6 +25,10 @@
   transform: scale(1.05);
 }
 
+.action:active {
+  transform: scale(0.95);
+}
+
 .action__texts {
   width: 165px;
   display: flex;

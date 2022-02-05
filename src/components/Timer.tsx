@@ -38,6 +38,7 @@ function Timer(props: props) {
       setTimer(1440);
       props.reloadCredits();
       setReloadDate(new Date());
+      setCurrentDate(new Date());
     } else {
       const counter = setInterval(() => setTimer(timer - 1), 60000);
       return () => clearInterval(counter);

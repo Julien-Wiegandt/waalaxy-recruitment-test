@@ -47,13 +47,17 @@ function Fifo() {
   };
 
   const reloadCredits = () => {
+    return reload(actions);
+  };
+
+  function reload(actions: Action[]) {
     let newCredits: CreditsAction[] = [];
     actions.forEach((action) => {
       newCredits.push({ credits: generateCredits(action), name: action.name });
     });
     setCredits(newCredits);
     return 0;
-  };
+  }
 
   const removeFifoqueue = () => {
     setFifoQueue([]);
@@ -71,14 +75,17 @@ function Fifo() {
     // Get api credits if not empty
     CreditsActionService.getAll()
       .then((res) => {
-        if (res.data !== []) {
+        console.log(res.data.length);
+        console.log(res.data.length > 0);
+        if (res.data.length > 0) {
           const newCredits: CreditsAction[] = [];
           res.data.forEach((creditsAction: CreditsAction) => {
             newCredits.push({ credits: creditsAction.credits, name: creditsAction.name });
           });
           setCredits(newCredits);
         } else {
-          reloadCredits();
+          console.log("reload");
+          reload(newActions);
         }
       })
       .catch((e) => {
@@ -105,6 +112,8 @@ function Fifo() {
       });
   }, []);
 
+  useEffect(() => {}, [actions]);
+
   useEffect(() => {
     CreditsActionService.update(credits)
       .then((res) => {})
@@ -120,10 +129,6 @@ function Fifo() {
         console.log(e);
       });
   }, [fifoQueue]);
-
-  useEffect(() => {
-    reloadCredits();
-  }, [actions]);
 
   return (
     <div className="fifo">

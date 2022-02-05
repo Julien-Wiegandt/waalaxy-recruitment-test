@@ -25,8 +25,11 @@ function Fifoqueue(props: props) {
   const [showAll, setShowAll] = useState(false);
   return (
     <div className="fifoqueue">
-      <h2>FIFO queue</h2>
-      <button onClick={props.removeFifoqueue}>remove</button>
+      <div className="fifoqueue__header">
+        <h2>FIFO queue</h2>
+        <button onClick={props.removeFifoqueue}>remove all</button>
+      </div>
+
       <div className="fifoqueue__list">
         {props.fifoQueue.map((actionItem, index) => {
           if (index < 5 || showAll) {
