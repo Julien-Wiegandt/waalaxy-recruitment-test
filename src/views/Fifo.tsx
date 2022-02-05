@@ -75,8 +75,6 @@ function Fifo() {
     // Get api credits if not empty
     CreditsActionService.getAll()
       .then((res) => {
-        console.log(res.data.length);
-        console.log(res.data.length > 0);
         if (res.data.length > 0) {
           const newCredits: CreditsAction[] = [];
           res.data.forEach((creditsAction: CreditsAction) => {
@@ -84,7 +82,6 @@ function Fifo() {
           });
           setCredits(newCredits);
         } else {
-          console.log("reload");
           reload(newActions);
         }
       })
