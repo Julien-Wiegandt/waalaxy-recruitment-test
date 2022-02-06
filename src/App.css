@@ -1,0 +1,14 @@
+h2 {
+  margin: 34px 0 22px 0;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  all: unset;
+}
