@@ -17,18 +17,26 @@ const actionsData = [
   { name: "Action F", maxCredits: 10, color: "#98F5E1" },
 ];
 
-function generateCredits(action: Action): number {
-  const min = action.maxCredits * 0.8;
-  const range = action.maxCredits - min;
-  return Math.round(min + Math.random() * range);
-}
-
 function Fifo() {
   const [actions, setActions] = useState<Action[]>([]);
   const [credits, setCredits] = useState<CreditsAction[]>([]);
   const [fifoQueue, setFifoQueue] = useState<Action[]>([]);
 
-  // Add action to fifoQueue
+  /**
+   * Generate random credits between 80% and 100% of the action's maxCredits.
+   * @param action
+   * @returns generated credits.
+   */
+  function generateCredits(action: Action): number {
+    const min = action.maxCredits * 0.8;
+    const range = action.maxCredits - min;
+    return Math.round(min + Math.random() * range);
+  }
+
+  /**
+   * Add action to fifoQueue.
+   * @param action
+   */
   const addAction = (action: Action) => {
     credits.forEach((creditsAction, index) => {
       if (creditsAction.name === action.name) {
@@ -42,26 +50,32 @@ function Fifo() {
         }
       }
     });
-
-    return 0;
   };
 
+  /**
+   * Call reload user's action credits function.
+   */
   const reloadCredits = () => {
-    return reload(actions);
+    reload(actions);
   };
 
+  /**
+   * Re generate user's action credits.
+   * @param actions
+   */
   function reload(actions: Action[]) {
     let newCredits: CreditsAction[] = [];
     actions.forEach((action) => {
       newCredits.push({ credits: generateCredits(action), name: action.name });
     });
     setCredits(newCredits);
-    return 0;
   }
 
+  /**
+   * Reset FIFO queue
+   */
   const removeFifoqueue = () => {
     setFifoQueue([]);
-    return 0;
   };
 
   useEffect(() => {
@@ -72,7 +86,7 @@ function Fifo() {
     });
     setActions(newActions);
 
-    // Get api credits if not empty
+    // Get api credits if not empty, reload credits otherwise.
     CreditsActionService.getAll()
       .then((res) => {
         if (res.data.length > 0) {
@@ -89,7 +103,7 @@ function Fifo() {
         console.log(e);
       });
 
-    // Get api fifoqueue if not empty
+    // Get api fifoqueue if not empty.
     FifoQueueService.getAll()
       .then((res) => {
         if (res.data !== []) {
@@ -107,10 +121,9 @@ function Fifo() {
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  }, []); //eslint-disable-line
 
-  useEffect(() => {}, [actions]);
-
+  // Update api's credits on user's credits change.
   useEffect(() => {
     CreditsActionService.update(credits)
       .then((res) => {})
@@ -119,6 +132,7 @@ function Fifo() {
       });
   }, [credits]);
 
+  // Update api's fifo queue on fifo queue change.
   useEffect(() => {
     FifoQueueService.update(fifoQueue)
       .then((res) => {})

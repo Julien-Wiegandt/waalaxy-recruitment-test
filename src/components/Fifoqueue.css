@@ -44,6 +44,11 @@
   justify-content: center;
 }
 
+.arrow__btn {
+  background-color: transparent;
+  border: none;
+}
+
 .arrow__icon__down {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
