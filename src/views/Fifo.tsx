@@ -8,17 +8,17 @@ import CreditsAction from "../interfaces/CreditsAction";
 import CreditsActionService from "../services/CreditsActionService";
 import FifoQueueService from "../services/FifoQueueService";
 
-const actionsData = [
-  { name: "Action A", maxCredits: 27, color: "#F1C0E8" },
-  { name: "Action B", maxCredits: 20, color: "#CFBAF0" },
-  { name: "Action C", maxCredits: 14, color: "#90DBF4" },
-  { name: "Action D", maxCredits: 15, color: "#A3C4F3" },
-  { name: "Action E", maxCredits: 16, color: "#B9FBC0" },
-  { name: "Action F", maxCredits: 10, color: "#98F5E1" },
-];
-
 function Fifo() {
-  const [actions, setActions] = useState<Action[]>([]);
+  const actionsData = [
+    { name: "Action A", maxCredits: 27, color: "#F1C0E8" },
+    { name: "Action B", maxCredits: 20, color: "#CFBAF0" },
+    { name: "Action C", maxCredits: 14, color: "#90DBF4" },
+    { name: "Action D", maxCredits: 15, color: "#A3C4F3" },
+    { name: "Action E", maxCredits: 16, color: "#B9FBC0" },
+    { name: "Action F", maxCredits: 10, color: "#98F5E1" },
+  ];
+
+  const [actions, setActions] = useState<Action[]>(actionsData);
   const [credits, setCredits] = useState<CreditsAction[]>([]);
   const [fifoQueue, setFifoQueue] = useState<Action[]>([]);
 
@@ -79,13 +79,6 @@ function Fifo() {
   };
 
   useEffect(() => {
-    // Create actions on load
-    let newActions: Action[] = [];
-    actionsData.forEach((action) => {
-      newActions.push(action);
-    });
-    setActions(newActions);
-
     // Get api credits if not empty, reload credits otherwise.
     CreditsActionService.getAll()
       .then((res) => {
@@ -96,7 +89,7 @@ function Fifo() {
           });
           setCredits(newCredits);
         } else {
-          reload(newActions);
+          reload(actions);
         }
       })
       .catch((e) => {
@@ -123,6 +116,25 @@ function Fifo() {
       });
   }, []); //eslint-disable-line
 
+  useEffect(() => {
+    // Get api credits if not empty, reload credits otherwise.
+    CreditsActionService.getAll()
+      .then((res) => {
+        if (res.data.length > 0) {
+          const newCredits: CreditsAction[] = [];
+          res.data.forEach((creditsAction: CreditsAction) => {
+            newCredits.push({ credits: creditsAction.credits, name: creditsAction.name });
+          });
+          setCredits(newCredits);
+        } else {
+          reload(actions);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [actions]); //eslint-disable-line
+
   // Update api's credits on user's credits change.
   useEffect(() => {
     CreditsActionService.update(credits)
@@ -143,7 +155,7 @@ function Fifo() {
 
   return (
     <div className="fifo">
-      <Timer reloadCredits={reloadCredits} />
+      <Timer reloadCredits={() => reloadCredits()} />
       <div className="fifo__container">
         <Actions actions={actions} addAction={addAction} credits={credits} />
         <Fifoqueue fifoQueue={fifoQueue} removeFifoqueue={removeFifoqueue} />
