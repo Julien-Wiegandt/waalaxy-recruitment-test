@@ -1,18 +1,21 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Actions from "../components/Actions";
-import { hexToRGB } from "../utils";
+import { hexToRGB, randomColor, randomNumber, randomString } from "../utils";
 
 test("renders Actions", () => {
-  const actions = [
-    { name: "Action A", maxCredits: 27, color: "#F1C0E8" },
-    { name: "Action B", maxCredits: 20, color: "#CFBAF0" },
-  ];
+  const actions = [];
+  for (let i = 0; i < randomNumber(1, 5); i++) {
+    actions.push({
+      name: randomString(10),
+      maxCredits: randomNumber(0, 100),
+      color: randomColor(),
+    });
+  }
   const addAction = jest.fn();
-  const credits = [
-    { credits: 26, name: "Action A" },
-    { credits: 20, name: "Action B" },
-  ];
+  const credits = actions.map((action) => {
+    return { credits: randomNumber(0, 100), name: action.name };
+  });
 
   render(<Actions actions={actions} addAction={addAction} credits={credits} />);
 

@@ -5,8 +5,8 @@ import Fifoqueue from "../components/Fifoqueue";
 import "./Fifo.css";
 import Action from "../interfaces/Action";
 import CreditsAction from "../interfaces/CreditsAction";
-import CreditsActionService from "../services/CreditsActions";
-import FifoQueueService from "../services/Fifoqueue";
+import CreditsActionService from "../services/CreditsActionService";
+import FifoQueueService from "../services/FifoQueueService";
 
 const actionsData = [
   { name: "Action A", maxCredits: 27, color: "#F1C0E8" },

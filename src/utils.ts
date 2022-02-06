@@ -16,3 +16,27 @@ export const hexToRGB = (hex: string) => {
   }
   return { r, g, b };
 };
+
+export function randomString(length: number): string {
+  var result = "";
+  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+export function randomColor(): string {
+  var result = "";
+  var characters = "ABCDEF0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return "#" + result;
+}
+
+export function randomNumber(min: number, max: number): number {
+  return max < min ? -1 : min + Math.round(Math.random() * (max - min));
+}
